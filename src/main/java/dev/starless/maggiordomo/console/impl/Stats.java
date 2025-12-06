@@ -31,7 +31,7 @@ public class Stats implements ConsoleCommand {
         Statistics stats = Statistics.getInstance();
 
         String message = """
-                        Maggiordomo's stats:
+                        TempVC stats:
                         The bot has joined %d guilds.
                         The guilds have in average %.1f members.
                         Smallest guild has %d members.

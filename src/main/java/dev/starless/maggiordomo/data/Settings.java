@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@MongoObject(database = "Maggiordomo", collection = "Settings")
+@MongoObject(database = "TempVC", collection = "Settings")
 public class Settings {
 
     @MongoKey
