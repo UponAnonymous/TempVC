@@ -29,7 +29,7 @@ public class Config {
             return false;
         }
 
-        File configFile = new File(configDirectory, "maggiordomo.yml");
+        File configFile = new File(configDirectory, "tempvc.yml");
 
         boolean configExisting = configFile.exists(); // Controlliamo se esiste il file della configurazione
         boolean configUpdating = false; // Verrà impostata su true se la config deve essere aggiornata
