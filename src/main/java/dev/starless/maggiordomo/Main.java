@@ -42,7 +42,7 @@ public class Main {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .GET()
-                    .uri(new URI("https://api.github.com/repos/StarlessDev/Maggiordomo/releases/latest")).build();
+                    .uri(new URI("https://api.github.com/repos/StarlessDev/TempVC/releases/latest")).build();
 
             response = client.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
             int code = response.statusCode();

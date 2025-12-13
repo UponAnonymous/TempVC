@@ -1,5 +1,5 @@
 # TempVC
-![License](https://img.shields.io/github/license/StarlessDev/Maggiordomo?style=for-the-badge&color=white)
+![License](https://img.shields.io/github/license/StarlessDev/TempVC?style=for-the-badge&color=white)
 
 TempVC manages and customizes temporary rooms (and more) in your Discord server with a streamlined, neutral branding.
 
@@ -8,7 +8,7 @@ Unfortunately, hosting does not grow on trees... and TempVC has always been **FR
 
 For this reason the public instance of TempVC is now **offline**.
 
-The documentation will still be kept online, so if you want you can still follow the [guide](https://mgd.starless.dev/selfhosting/) to setup your own instance of the bot.
+The documentation will still be kept online, so if you want you can still follow the [guide](https://tempvc.starless.dev/selfhosting/) to setup your own instance of the bot.
 
 ## Features
 - Support for **temporary** and **pinned** (aka *permanent*) rooms
@@ -24,4 +24,4 @@ The documentation will still be kept online, so if you want you can still follow
 - and more...
 
 ## Documentation
-All of the documentation, invite link and uptime information is available on the new site <a href="https://mgd.starless.dev" target="_blank">https://maggiordomo.starless.dev</a>.
+All of the documentation, invite link and uptime information is available on the new site <a href="https://tempvc.starless.dev" target="_blank">https://tempvc.starless.dev</a>.
