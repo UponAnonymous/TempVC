@@ -21,7 +21,7 @@ public class Main {
     @Getter private static final String version = "2.1.2";
 
     public static void main(String[] args) {
-        BotLogger.info("Running Maggiordomo v%s by Starless", version);
+        BotLogger.info("Running TempVC v%s by Starless", version);
         checkUpdate();
 
         try {
@@ -55,7 +55,7 @@ public class Main {
                 if (latestVersion.isGreaterThan(currentVersion)) {
                     BotLogger.info("There is a new version (%s > %s) available on github!", latestTag, version);
                 } else {
-                    BotLogger.info("Maggiordomo is up to date.");
+                    BotLogger.info("TempVC is up to date.");
                 }
             } else {
                 BotLogger.error("Could not check for updates! Invalid HTTP Code: " + code);

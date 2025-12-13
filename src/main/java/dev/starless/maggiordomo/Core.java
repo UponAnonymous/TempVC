@@ -194,7 +194,7 @@ public class Core implements Module {
         });
 
         commands = new CommandManager()
-                .name("maggiordomo")
+                .name("tempvc")
                 // Slash commands (only for admins)
                 .both(new SetupCommand())
                 .both(new ManagementCommand())
@@ -304,13 +304,11 @@ public class Core implements Module {
     public void onGuildLeave(@NotNull GuildLeaveEvent e) {
         String guildID = e.getGuild().getId();
         // Delete the guilds' data alongside all the vc data
+        channelMapper.getMapper(guildID).purge();
         settingsMapper.search(QueryBuilder.init()
                         .add("guild", guildID)
                         .create())
-                .ifPresent(settings -> {
-                    channelMapper.getMapper(guildID).purge();
-                    settingsMapper.delete(settings);
-                });
+                .ifPresent(settingsMapper::delete);
 
         Statistics.getInstance().updateGuild(false); // Update statistics
         BotLogger.info("The bot departed from the guild '%s'.", e.getGuild().getName());
@@ -572,6 +570,10 @@ public class Core implements Module {
                 vc = cachedVC.get();
                 VoiceChannel voiceChannel = guild.getVoiceChannelById(vc.getChannel());
                 if (voiceChannel != null) {
+                    Perms.setPublicPerms(voiceChannel.getManager(), vc.getState(), publicRole, true)
+                            .queue(RestUtils.emptyConsumer(),
+                                    RestUtils.throwableConsumer("Could not sync public permissions: {EXCEPTION}"));
+
                     try {
                         guild.moveVoiceMember(member, voiceChannel).complete();
                     } catch (ErrorResponseException ex) {
@@ -612,15 +614,14 @@ public class Core implements Module {
 
         // Kick the user if they are banned from the vc they are trying to join
         // (This should not be needed, since banned users do not see the vc they are banned from)
-        if (vc.hasPlayerRecord(UserState.BAN, member.getId())) {
+        if (vc.hasPlayerRecord(UserState.BAN, member.getId()) && !vc.isBanBypassed(member.getId())) {
             guild.kickVoiceMember(member).queue(
                     RestUtils.emptyConsumer(),
                     RestUtils.throwableConsumer("Something went wrong when kicking: " + References.user(member.getUser()))
             );
             return;
-        } else if (channel.getMembers().size() == 1) { // If the user is the first to join the channel
-            channel.upsertPermissionOverride(publicRole)
-                    .grant(Permission.VIEW_CHANNEL)
+        } else if (channel.getMembers().size() == 1 && channel instanceof VoiceChannel voiceChannel) { // If the user is the first to join the channel
+            Perms.setPublicPerms(voiceChannel.getManager(), vc.getState(), publicRole, true)
                     .queue(RestUtils.emptyConsumer(),
                             RestUtils.throwableConsumer("Could not set the public role's permissions: {EXCEPTION}"));
         }
