@@ -8,8 +8,9 @@ import dev.starless.maggiordomo.data.VC;
 import dev.starless.maggiordomo.localization.Translations;
 import dev.starless.maggiordomo.localization.Messages;
 import dev.starless.maggiordomo.utils.discord.Embeds;
+import dev.starless.maggiordomo.utils.discord.Perms;
+import dev.starless.maggiordomo.utils.discord.RestUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -17,7 +18,6 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
-import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 
 import java.awt.*;
@@ -65,22 +65,11 @@ public class StatusInteraction implements Interaction {
 
                 // Cambia i permessi della stanza, se presente
                 VoiceChannel channel = e.getGuild().getVoiceChannelById(vc.getChannel());
-                if(channel != null) {
-                    PermissionOverrideAction everyonePerms = channel.upsertPermissionOverride(usersRole);
+                if (channel != null) {
+                    boolean visible = !channel.getMembers().isEmpty();
 
-                    if(vc.getState().equals(VCState.LOCKED)) {
-                        everyonePerms = everyonePerms.setDenied(Permission.VOICE_CONNECT);
-                    } else {
-                        everyonePerms = everyonePerms.setAllowed(Permission.VOICE_CONNECT);
-                    }
-
-                    if(!channel.getMembers().isEmpty()) {
-                        everyonePerms = everyonePerms.grant(Permission.VIEW_CHANNEL);
-                    } else {
-                        everyonePerms = everyonePerms.deny(Permission.VIEW_CHANNEL);
-                    }
-
-                    everyonePerms.queue();
+                    Perms.setPublicPerms(channel.getManager(), vc.getState(), usersRole, visible)
+                            .queue(RestUtils.emptyConsumer(), RestUtils.throwableConsumer());
                 }
 
                 // Setta il messaggio di risposta

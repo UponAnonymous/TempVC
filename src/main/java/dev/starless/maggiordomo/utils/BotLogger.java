@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 @UtilityClass
 public class BotLogger {
 
-    @Getter private final Logger logger = (Logger) LoggerFactory.getLogger("Maggiordomo");
+    @Getter private final Logger logger = (Logger) LoggerFactory.getLogger("TempVC");
 
     public void info(String message, Object... objects) {
         logger.info(String.format(message, objects));

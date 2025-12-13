@@ -46,6 +46,7 @@ public class Perms {
 
     private final List<Permission> voicePublicAllowedPerms = List.of(
             Permission.MESSAGE_SEND,
+            Permission.VOICE_CONNECT,
             Permission.VOICE_SPEAK,
             Permission.VOICE_USE_VAD,
             Permission.VOICE_STREAM,
