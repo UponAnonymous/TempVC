@@ -620,8 +620,8 @@ public class Core implements Module {
                     RestUtils.throwableConsumer("Something went wrong when kicking: " + References.user(member.getUser()))
             );
             return;
-        } else if (channel.getMembers().size() == 1) { // If the user is the first to join the channel
-            Perms.setPublicPerms(channel.getManager(), vc.getState(), publicRole, true)
+        } else if (channel.getMembers().size() == 1 && channel instanceof VoiceChannel voiceChannel) { // If the user is the first to join the channel
+            Perms.setPublicPerms(voiceChannel.getManager(), vc.getState(), publicRole, true)
                     .queue(RestUtils.emptyConsumer(),
                             RestUtils.throwableConsumer("Could not set the public role's permissions: {EXCEPTION}"));
         }
