@@ -76,7 +76,8 @@ public class Translations {
             BotLogger.info("Cannot read the files from the languages directory.");
         }
 
-        BotLogger.info("Loaded %d languages", roots.size());
+        roots.keySet().removeIf(code -> !"en".equals(code));
+        BotLogger.info("Loaded %d languages (English only)", roots.size());
     }
 
     public Set<String> getLanguageCodes() {

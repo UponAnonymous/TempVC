@@ -44,11 +44,6 @@ public enum Messages {
     COMMAND_FILTERS_PATTERN_INPUT("commands.filters.pattern_input"),
     COMMAND_FILTERS_UPDATED("commands.filters.updated"),
 
-    COMMAND_LANGUAGE_DESCRIPTION("commands.language.description"),
-    COMMAND_LANGUAGE_PARAMETER_LANG("commands.language.parameters.language"),
-    COMMAND_LANGUAGE_SUCCESS("commands.language.success"),
-    COMMAND_LANGUAGE_FAIL("commands.language.unsupported"),
-
     // Management command
     COMMAND_MANAGEMENT_DESCRIPTION("commands.management.description"),
     COMMAND_MANAGEMENT_MENU_CONTENT("commands.management.menu.content"),

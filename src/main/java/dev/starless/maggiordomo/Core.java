@@ -200,7 +200,6 @@ public class Core implements Module {
                 .both(new ManagementCommand())
                 .command(new MenuCommand())
                 .command(new RecoverCommand())
-                .command(new LanguageCommand())
                 // Interactions for admins
                 .interaction(new ListManager("premium", lang -> Translations.string(Messages.COMMAND_MANAGEMENT_MENU_PREMIUM_ROLES_BUTTON, lang), Settings::getPremiumRoles))
                 .interaction(new ListManager("blacklist", lang -> Translations.string(Messages.COMMAND_MANAGEMENT_MENU_BANNED_ROLES_BUTTON, lang), Settings::getBannedRoles, (roles, removed) -> {

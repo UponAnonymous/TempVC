@@ -20,7 +20,7 @@ The documentation will still be kept online, so if you want you can still follow
 - Support for multiple categories
 - Filters: do not let users use offensive names for their rooms
 - Manage all the rooms easily in a single dashboard
-- Fully translatable: currently only available in English and Italian
+- Streamlined English-only interface
 - and more...
 
 ## Documentation

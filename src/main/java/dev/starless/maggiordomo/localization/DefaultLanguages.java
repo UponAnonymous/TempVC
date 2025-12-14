@@ -10,8 +10,7 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public enum DefaultLanguages {
 
-    ENGLISH("en", "English"),
-    ITALIAN("it", "Italiano");
+    ENGLISH("en", "English");
 
     private final String code;
     private final String name;
