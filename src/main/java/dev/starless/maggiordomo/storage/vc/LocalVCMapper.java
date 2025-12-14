@@ -180,10 +180,16 @@ public class LocalVCMapper implements IMapper<VC> {
                     if (member != null) manager = Perms.trust(member, manager);
                 }
 
-                // Banna gli utenti
+                // Gestisci gli utenti bannati e le eventuali eccezioni
                 for (String bannedId : vc.getBanned()) {
                     Member member = category.getGuild().getMemberById(bannedId);
-                    if (member != null) manager = Perms.ban(member, manager);
+                    if (member == null) continue;
+
+                    if (vc.isBanBypassed(bannedId)) {
+                        manager = Perms.trust(member, manager);
+                    } else {
+                        manager = Perms.ban(member, manager);
+                    }
                 }
 
                 Consumer<? super Throwable> errorHandler = throwable -> {

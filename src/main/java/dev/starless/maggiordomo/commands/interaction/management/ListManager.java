@@ -5,6 +5,7 @@ import dev.starless.maggiordomo.data.Settings;
 import dev.starless.maggiordomo.data.VC;
 import dev.starless.maggiordomo.localization.Messages;
 import dev.starless.maggiordomo.localization.Translations;
+import dev.starless.maggiordomo.utils.BotLogger;
 import dev.starless.maggiordomo.utils.PageUtils;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.entities.Guild;
@@ -18,7 +19,10 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
+import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageEditData;
 
 import java.util.*;
 import java.util.function.Function;
@@ -62,13 +66,16 @@ public class ListManager extends AManagementInteraction {
             supplier.get(settings).addAll(roles.stream().map(Role::getId).toList());
             core.getSettingsMapper().update(settings);
 
-            e.getMessage().editMessage(getMainMenu(settings)
-                            .setAllowedMentions(Collections.emptyList())
-                            .setReplace(true)
-                            .build())
+            MessageEditData updatedPanel = getMainMenu(settings)
+                    .setAllowedMentions(Collections.emptyList())
+                    .setReplace(true)
+                    .build();
+
+            e.editMessage(updatedPanel)
                     .queue(success -> e.reply(Translations.string(Messages.COMMAND_MANAGEMENT_LISTS_ROLE_ADDED, settings.getLanguage()))
-                            .setEphemeral(true)
-                            .queue());
+                                    .setEphemeral(true)
+                                    .queue(),
+                            error -> sendExpiredPanelFallback(e, settings, updatedPanel));
 
             if (successAction != null) {
                 successAction.accept(roles, false);
@@ -87,11 +94,14 @@ public class ListManager extends AManagementInteraction {
             ids.forEach(supplier.get(settings)::remove);
             core.getSettingsMapper().update(settings);
 
-            e.getMessage().editMessage(getMainMenu(settings)
-                            .setAllowedMentions(Collections.emptyList())
-                            .setReplace(true)
-                            .build())
-                    .queue(success -> e.reply(Translations.string(Messages.COMMAND_MANAGEMENT_LISTS_ROLE_REMOVED, settings.getLanguage())).setEphemeral(true).queue());
+            MessageEditData updatedPanel = getMainMenu(settings)
+                    .setAllowedMentions(Collections.emptyList())
+                    .setReplace(true)
+                    .build();
+
+            e.editMessage(updatedPanel)
+                    .queue(success -> e.reply(Translations.string(Messages.COMMAND_MANAGEMENT_LISTS_ROLE_REMOVED, settings.getLanguage())).setEphemeral(true).queue(),
+                            error -> sendExpiredPanelFallback(e, settings, updatedPanel));
 
             if (successAction != null) {
                 successAction.accept(ids.stream().map(e.getGuild()::getRoleById)
@@ -178,5 +188,29 @@ public class ListManager extends AManagementInteraction {
     public interface SuccessAction {
 
         void accept(List<Role> roles, boolean removed);
+    }
+
+    private void sendExpiredPanelFallback(EntitySelectInteractionEvent e, Settings settings, MessageEditData panel) {
+        sendExpiredPanelFallback(e, settings.getLanguage(), panel);
+    }
+
+    private void sendExpiredPanelFallback(StringSelectInteractionEvent e, Settings settings, MessageEditData panel) {
+        sendExpiredPanelFallback(e, settings.getLanguage(), panel);
+    }
+
+    private void sendExpiredPanelFallback(IReplyCallback e, String lang, MessageEditData panel) {
+        BotLogger.warn("Management panel webhook expired, re-sending a fresh view");
+
+        MessageCreateBuilder builder = new MessageCreateBuilder()
+                .setContent(Optional.ofNullable(panel.getContent()).orElse(Translations.string(Messages.NO_SELECTION, lang)))
+                .setComponents(panel.getComponents());
+
+        if (e.isAcknowledged()) {
+            e.getHook().sendMessage(builder.build()).queue();
+        } else {
+            e.reply(builder.build())
+                    .setEphemeral(true)
+                    .queue();
+        }
     }
 }

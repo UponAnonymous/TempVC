@@ -6,9 +6,7 @@ import lombok.experimental.UtilityClass;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
-import net.dv8tion.jda.api.managers.channel.concrete.TextChannelManager;
 import net.dv8tion.jda.api.managers.channel.concrete.VoiceChannelManager;
 
 import java.util.ArrayList;
@@ -46,6 +44,7 @@ public class Perms {
 
     private final List<Permission> voicePublicAllowedPerms = List.of(
             Permission.MESSAGE_SEND,
+            Permission.VOICE_CONNECT,
             Permission.VOICE_SPEAK,
             Permission.VOICE_USE_VAD,
             Permission.VOICE_STREAM,
@@ -135,22 +134,6 @@ public class Perms {
                 });
             }
         });
-
-        // Reimposta i permessi dei canali
-        TextChannel dashboardChannel = guild.getTextChannelById(settings.getMenuChannelID());
-        if (dashboardChannel != null) {
-            TextChannelManager manager = dashboardChannel.getManager()
-                    .removePermissionOverride(oldRole)
-                    .putRolePermissionOverride(newRole.getIdLong(), dashboardAllowedPerms, dashboardDeniedPerms);
-
-            if (newRoleNotEveryone) {
-                manager.putRolePermissionOverride(everyone.getIdLong(),
-                        0,
-                        Permission.ALL_PERMISSIONS);
-            }
-
-            manager.queue();
-        }
 
         VoiceChannel createChannel = guild.getVoiceChannelById(settings.getVoiceGeneratorID());
         if (createChannel != null) {
