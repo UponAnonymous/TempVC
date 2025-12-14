@@ -21,7 +21,10 @@ public class SettingsMapper implements IMapper<Settings> {
         gateway = new SettingsGateway(storage);
         settings = new ConcurrentHashMap<>();
 
-        gateway.lazyLoad(QueryBuilder.empty()).forEach(storedSettings -> settings.put(storedSettings.getGuild(), storedSettings));
+        gateway.lazyLoad(QueryBuilder.empty()).forEach(storedSettings -> {
+            ensureEnglish(storedSettings);
+            settings.put(storedSettings.getGuild(), storedSettings);
+        });
     }
 
     @Override
@@ -62,5 +65,12 @@ public class SettingsMapper implements IMapper<Settings> {
     @Override
     public List<Settings> bulkSearch(Query query) {
         return gateway.lazyLoad(query);
+    }
+
+    private void ensureEnglish(Settings settings) {
+        if (!"en".equals(settings.getLanguage())) {
+            settings.setLanguage("en");
+            gateway.update(settings);
+        }
     }
 }

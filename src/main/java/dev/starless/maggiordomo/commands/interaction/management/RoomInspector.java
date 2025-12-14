@@ -105,27 +105,64 @@ public class RoomInspector extends AManagementInteraction {
                     if (op.isPresent()) {
                         VC targetVC = op.get();
                         String memberTargetID = values.get(0);
-                        boolean modifyTrusted = action.equals("trust");
+                        switch (action) {
+                            case "trust", "ban" -> {
+                                boolean modifyTrusted = action.equals("trust");
 
-                        targetVC.removePlayerRecord(modifyTrusted ? UserState.TRUST : UserState.BAN, memberTargetID);
-                        if (targetVC.hasChannel()) {
-                            Member targetMember = e.getGuild().getMemberById(memberTargetID);
-                            if (targetMember != null) {
-                                VoiceChannel voiceChannel = e.getGuild().getVoiceChannelById(targetVC.getChannel());
-                                if (voiceChannel != null) {
-                                    Perms.reset(targetMember, voiceChannel.getManager());
+                                targetVC.removePlayerRecord(modifyTrusted ? UserState.TRUST : UserState.BAN, memberTargetID);
+                                if (targetVC.hasChannel()) {
+                                    Member targetMember = e.getGuild().getMemberById(memberTargetID);
+                                    if (targetMember != null) {
+                                        VoiceChannel voiceChannel = e.getGuild().getVoiceChannelById(targetVC.getChannel());
+                                        if (voiceChannel != null) {
+                                            Perms.reset(targetMember, voiceChannel.getManager());
+                                        }
+                                    }
                                 }
+                                mapper.update(targetVC);
+
+                                e.reply(Translations.string(Messages.COMMAND_MANAGEMENT_LISTS_USER_REMOVED, settings.getLanguage()))
+                                        .setEphemeral(true)
+                                        .queue();
+                            }
+                            case "bypass" -> {
+                                if (!targetVC.hasPlayerRecord(UserState.BAN, memberTargetID)) {
+                                    e.reply(Translations.string(Messages.COMMAND_MANAGEMENT_ROOMS_NOT_AVAILABLE, settings.getLanguage()))
+                                            .setEphemeral(true)
+                                            .queue();
+                                    return null;
+                                }
+
+                                boolean enabled = targetVC.toggleBanBypass(memberTargetID);
+                                if (targetVC.hasChannel()) {
+                                    Member targetMember = e.getGuild().getMemberById(memberTargetID);
+                                    if (targetMember != null) {
+                                        VoiceChannel voiceChannel = e.getGuild().getVoiceChannelById(targetVC.getChannel());
+                                        if (voiceChannel != null) {
+                                            if (enabled) {
+                                                Perms.trust(targetMember, voiceChannel.getManager()).queue();
+                                            } else {
+                                                Perms.ban(targetMember, voiceChannel.getManager()).queue();
+                                            }
+                                        }
+                                    }
+                                }
+
+                                mapper.update(targetVC);
+
+                                String response = enabled
+                                        ? "Bypass enabled for the selected user."
+                                        : "Bypass removed for the selected user.";
+
+                                e.reply(response)
+                                        .setEphemeral(true)
+                                        .queue();
                             }
                         }
-                        mapper.update(targetVC);
 
                         e.getMessage().editMessage(getInspectMenu(e.getGuild(), targetVC.getChannel(), settings.getLanguage()).build())
                                 .setAllowedMentions(Collections.emptyList())
                                 .setReplace(true)
-                                .queue();
-
-                        e.reply(Translations.string(Messages.COMMAND_MANAGEMENT_LISTS_USER_REMOVED, settings.getLanguage()))
-                                .setEphemeral(true)
                                 .queue();
 
                         return null;
@@ -239,6 +276,9 @@ public class RoomInspector extends AManagementInteraction {
             if (!banned.isEmpty()) {
                 lastRow.add(createUserMenu("ban", vc.getChannel(),
                         Translations.string(Messages.COMMAND_MANAGEMENT_ROOMS_DROPDOWNS_BANNED_PLACEHOLDER, language),
+                        language, guild, banned));
+                lastRow.add(createUserMenu("bypass", vc.getChannel(),
+                        Translations.string(Messages.COMMAND_MANAGEMENT_ROOMS_DROPDOWNS_BANNED_PLACEHOLDER, language) + " (bypass)",
                         language, guild, banned));
             }
 
