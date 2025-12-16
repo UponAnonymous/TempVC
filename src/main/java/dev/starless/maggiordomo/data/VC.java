@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 
 @Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@MongoObject(database = "Maggiordomo", collection = "VCs")
+@MongoObject(database = "TempVC", collection = "VCs")
 public class VC {
 
     @MongoKey
@@ -35,6 +35,7 @@ public class VC {
 
     private final Set<String> trusted;
     private final Set<String> banned;
+    private final Set<String> banBypass;
 
     private String title;
     private int size;
@@ -50,6 +51,7 @@ public class VC {
 
         this.trusted = new HashSet<>();
         this.banned = new HashSet<>();
+        this.banBypass = new HashSet<>();
 
         this.title = name.length() > 99 ? name.substring(0, 100) : name;
         this.size = limit;
@@ -87,6 +89,20 @@ public class VC {
             case BAN -> banned;
             case TRUST -> trusted;
         });
+    }
+
+    public boolean isBanBypassed(String id) {
+        return banBypass.contains(id);
+    }
+
+    public boolean toggleBanBypass(String id) {
+        if (banBypass.contains(id)) {
+            banBypass.remove(id);
+            return false;
+        }
+
+        banBypass.add(id);
+        return true;
     }
 
     public Set<UserRecord<UserState>> getRoleRecords() {

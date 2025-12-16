@@ -1,2 +1,2 @@
-rootProject.name = "Maggiordomo"
+rootProject.name = "TempVC"
 
