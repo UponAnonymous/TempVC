@@ -166,6 +166,9 @@ public class Perms {
 
         // Status della stanza
         if (status.equals(VCState.LOCKED)) {
+            // Stanza chiusa: rimuovi accesso e nascondi
+            visible = false;
+            allowed.remove(Permission.VOICE_CONNECT);
             denied.add(Permission.VOICE_CONNECT);
         }
 
