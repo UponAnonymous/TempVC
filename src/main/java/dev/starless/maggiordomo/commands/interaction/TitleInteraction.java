@@ -1,6 +1,5 @@
 package dev.starless.maggiordomo.commands.interaction;
 
-import dev.starless.maggiordomo.Bot;
 import dev.starless.maggiordomo.Core;
 import dev.starless.maggiordomo.commands.types.Interaction;
 import dev.starless.maggiordomo.data.Settings;
@@ -45,7 +44,7 @@ public class TitleInteraction implements Interaction {
 
             VoiceChannel channel = e.getGuild().getVoiceChannelById(vc.getChannel());
             if (channel != null) {
-                channel.getManager().setName(input).queue();
+                channel.getManager().setName(result.data()).queue();
             }
 
             e.replyEmbeds(new EmbedBuilder()

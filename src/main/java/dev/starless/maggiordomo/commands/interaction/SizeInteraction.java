@@ -66,7 +66,7 @@ public class SizeInteraction implements Interaction {
         e.replyModal(Modal.create(getName(), Translations.string(Messages.FILTER_MENU_TITLE, settings.getLanguage()))
                         .addActionRow(TextInput.create("vc:size", "Number", TextInputStyle.SHORT)
                                 .setRequiredRange(1, 2)
-                                .setPlaceholder("1-99")
+                                .setPlaceholder("0-99")
                                 .build())
                         .build())
                 .queue();
