@@ -550,12 +550,13 @@ public class Core implements Module {
             return;
         }
 
+        boolean isGeneratorChannel = channel.getId().equals(settings.getVoiceGeneratorID());
         Role publicRole = guild.getRoleById(settings.getPublicRole());
         if (publicRole == null) return; // <-- This should never happen, @everyone should be the default value
 
         VC vc = null;
         // If the user has joined the generator channel
-        if (channel.getId().equals(settings.getVoiceGeneratorID())) {
+        if (isGeneratorChannel) {
             Category category = settings.getAvailableCategory(guild);
             if (category == null) return; // <-- If this triggers something has gone VERY wrong
 
@@ -619,7 +620,7 @@ public class Core implements Module {
                     RestUtils.throwableConsumer("Something went wrong when kicking: " + References.user(member.getUser()))
             );
             return;
-        } else if (channel.getMembers().size() == 1 && channel instanceof VoiceChannel voiceChannel) { // If the user is the first to join the channel
+        } else if (!isGeneratorChannel && channel.getMembers().size() == 1 && channel instanceof VoiceChannel voiceChannel) { // If the user is the first to join the channel
             Perms.setPublicPerms(voiceChannel.getManager(), vc.getState(), publicRole, true)
                     .queue(RestUtils.emptyConsumer(),
                             RestUtils.throwableConsumer("Could not set the public role's permissions: {EXCEPTION}"));

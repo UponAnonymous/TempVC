@@ -68,10 +68,12 @@ public class ListInteraction implements Interaction {
 
             // Filtra i record e forma il messaggio
             Set<UserRecord<UserState>> records = vc.getRoleRecords();
-            int elementsNumber = records.size();
+            var filteredRecords = records.stream()
+                    .filter(record -> record.type().equals(type))
+                    .toList();
+            int elementsNumber = filteredRecords.size();
             long skippedElements = (long) PageUtils.DROPDOWN_MAX_ENTRIES * page;
-            records.stream()
-                    .filter(record -> record.type().equals(type)) // Limitati solo ai record del tipo corretto
+            filteredRecords.stream()
                     .skip(skippedElements) // Skippa alcuni elementi delle pagine precedenti
                     .limit(PageUtils.DROPDOWN_MAX_ENTRIES) // Limita gli elementi a 25
                     .forEach(record -> {

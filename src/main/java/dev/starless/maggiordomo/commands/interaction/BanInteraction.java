@@ -10,7 +10,6 @@ import dev.starless.maggiordomo.localization.Messages;
 import dev.starless.maggiordomo.utils.discord.Matcher;
 import dev.starless.maggiordomo.utils.discord.Embeds;
 import dev.starless.maggiordomo.utils.discord.Perms;
-import dev.starless.maggiordomo.utils.discord.RestUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
@@ -88,20 +87,6 @@ public class BanInteraction implements Interaction {
                             .findFirst()
                             .ifPresent(bannedMember -> e.getGuild().kickVoiceMember(bannedMember).queue());
                 }
-
-                // Avvisa l'utente bannato in dm
-                member.getUser().openPrivateChannel()
-                        .queue(dm -> dm.sendMessageEmbeds(new EmbedBuilder()
-                                                .setTitle(Translations.string(Messages.INTERACTION_BAN_NOTIFICATION_TITLE, settings.getLanguage()))
-                                                .setColor(new Color(239, 210, 95))
-                                                .setDescription(Translations.stringFormatted(Messages.INTERACTION_BAN_NOTIFICATION_DESC, settings.getLanguage(),
-                                                        "issuer", e.getUser().getAsMention(),
-                                                        "target", vc.getTitle()))
-                                                .build())
-                                        .queue(RestUtils.emptyConsumer(), RestUtils.emptyConsumer()),
-                                throwable -> e.replyEmbeds(Embeds.errorEmbed(Translations.string(Messages.GENERIC_ERROR, settings.getLanguage())))
-                                        .setEphemeral(true)
-                                        .queue());
 
                 return vc;
             }
